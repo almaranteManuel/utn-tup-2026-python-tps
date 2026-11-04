@@ -1,0 +1,5 @@
+# Archivos locales que genera la aplicación al correr
+database.db
+
+# Artefactos de tests
+.coverage

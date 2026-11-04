@@ -1,111 +1,47 @@
-# Clase FastAPI
+# Trabajos Prácticos — UTN TUP 2026 (Python / FastAPI)
 
-Clase para aprender **FastAPI** y **Pydantic**.
+Repo con los trabajos prácticos de la materia, hechos con **FastAPI** y
+**Pydantic**. Cada TP vive en su propia carpeta con su consigna, su README, sus
+dependencias y su entorno virtual.
 
-## Crear el entorno virtual (venv)
+| Carpeta | TP | Descripción |
+|---|---|---|
+| [`tp1/`](./tp1/) | TP1 — ABM de usuarios y equipos | API con CRUD en memoria (FastAPI + Pydantic) |
+| [`tp2/`](./tp2/) | TP2 — Sistema de biblioteca | API con entidades relacionadas (FastAPI + SQLModel). *En construcción.* |
 
-Desde esta carpeta (`clase-fastapi`):
+## Cómo correr un TP
 
-```bash
-python3 -m venv .venv
+Cada TP es autocontenido: se arma su entorno virtual y se instala su
+`requirements.txt` desde la carpeta del TP. Las instrucciones completas están
+en el README de cada uno:
+
+- [`tp1/README.md`](./tp1/README.md)
+- [`tp2/README.md`](./tp2/README.md)
+
+Estructura de cada carpeta:
+
 ```
-
-Activar el entorno virtual:
-
-```bash
-# macOS / Linux
-source .venv/bin/activate
-
-# Windows (PowerShell)
-.venv\Scripts\Activate.ps1
+tpX/
+├── consigna.md        # Enunciado del trabajo
+├── README.md          # Cómo correr / probar este TP
+├── requirements.txt   # Dependencias del TP
+├── main.py            # (TP2 aún no tiene código)
+├── models/
+└── routers/
 ```
-
-## Instalar los requerimientos
-
-Con el entorno virtual activado:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Ejecutar la aplicación
-
-```bash
-fastapi dev main.py
-```
-
-La API quedará disponible en `http://127.0.0.1:8000` y la documentación
-interactiva en `http://127.0.0.1:8000/docs`.
-
-## Endpoints disponibles
-
-Los datos se guardan en memoria, por lo que se reinician al detener la
-aplicación.
-
-### Usuarios
-
-- `GET /user`: lista todos los usuarios.
-- `GET /user?is_active=true` o `GET /user?is_active=false`: filtra por estado.
-- `GET /user/{id}`: obtiene un usuario.
-- `POST /user`: crea un usuario.
-- `PUT /user/{id}`: reemplaza los datos de un usuario.
-- `DELETE /user/{id}`: elimina un usuario.
-
-Ejemplo de usuario para `POST /user`:
-
-```json
-{
-  "id": 3,
-  "name": "Ana Gomez",
-  "is_active": true
-}
-```
-
-### Equipos de fútbol
-
-`Equipo` tiene cinco campos: `id`, `name`, `city`, `stadium` y
-`founded_year`.
-
-- `GET /team`: lista todos los equipos.
-- `GET /team?city=Buenos%20Aires`: filtra por ciudad, sin distinguir
-  mayúsculas y minúsculas.
-- `GET /team/{id}`: obtiene un equipo.
-- `POST /team`: crea un equipo.
-- `PUT /team/{id}`: reemplaza los datos de un equipo.
-- `DELETE /team/{id}`: elimina un equipo.
-
-Ejemplo de equipo para `POST /team`:
-
-```json
-{
-  "id": 3,
-  "name": "Belgrano",
-  "city": "Cordoba",
-  "stadium": "Julio Cesar Villagra",
-  "founded_year": 1905
-}
-```
-
-La forma más sencilla de probar todas las operaciones es abrir `/docs`,
-seleccionar un endpoint, pulsar **Try it out**, completar los datos y ejecutar
-la solicitud.
 
 ## Lint y chequeo de tipos
 
-El proyecto incluye configuración local para dos herramientas:
+Cada TP incluye la misma configuración:
 
-- **[`setup.cfg`](./setup.cfg)**: configuración de [`pycodestyle`](https://pycodestyle.pycqa.org/) (chequeo de estilo PEP 8). Define `max-line-length = 79` y excluye `.venv` y `__pycache__` del análisis.
-- **[`pyrightconfig.json`](./pyrightconfig.json)**: configuración de [`pyright`](https://microsoft.github.io/pyright/) (chequeo de tipos). Apunta al entorno virtual local (`.venv`) para resolver las dependencias instaladas y excluye `.venv` y `__pycache__`.
+- **`setup.cfg`**: configuración de [`pycodestyle`](https://pycodestyle.pycqa.org/) (estilo PEP 8, `max-line-length = 130`, excluye `.venv` y `__pycache__`).
+- **`pyrightconfig.json`**: configuración de [`pyright`](https://microsoft.github.io/pyright/) (chequeo de tipos), apunta al venv propio del TP.
 
-`pyright` ya está incluido en `requirements.txt`. `pycodestyle` no, así que hay que instalarlo aparte.
-
-Con el entorno virtual activado, correr:
+`pyright` ya está en el `requirements.txt` de cada TP. `pycodestyle` hay que
+instalarlo aparte. Desde la carpeta del TP, con el venv activado:
 
 ```bash
 pip install pycodestyle
 python -m pycodestyle .
-```
-
-```bash
 pyright
 ```

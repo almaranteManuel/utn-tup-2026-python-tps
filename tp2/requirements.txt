@@ -1,0 +1,3 @@
+# Dependencias del TP2 (por ahora sin versionar; fijar versiones cuando esté probado)
+fastapi
+sqlmodel

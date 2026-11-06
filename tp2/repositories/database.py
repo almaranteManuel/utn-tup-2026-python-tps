@@ -1,5 +1,3 @@
-# Se define la conexión a la base de datos
-
 from sqlmodel import Session, SQLModel, create_engine
 
 sqlite_file_name = "database.db"

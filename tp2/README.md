@@ -6,9 +6,6 @@ negocio y una base de datos SQLite.
 
 - 📄 Consigna: [`consigna.md`](./consigna.md)
 
-- 🚧 **Estado - Etapas 1 y 2 completadas: "CRUD y modelos" + "Relaciones".**
-  Restan: préstamos con sus reglas de negocio y la cobertura de tests de
-  negocio. Préstamos y autenticación no se implementan todavía.
 
 > Modelo de datos actual:
 >
@@ -18,17 +15,11 @@ negocio y una base de datos SQLite.
 > | `Libro` | id, titulo, isbn (único), stock (≥ 0), anio (0-2100) |
 > | `Socio` | id, nombre, email (único), activo (default `true`) |
 > | `LibroAutor` | libro_id, autor_id (tabla intermedia de la relación N-N) |
+> | `Prestamo` | id, socio_id, libro_id, fecha_prestamo, fecha_vencimiento, fecha_devolucion (nullable), multa |
 >
-> Relación: **Libro N-N Autor** — un libro puede tener varios autores y un
-> autor varios libros. Las respuestas de `/libros` incluyen la lista de
-> `autores` de cada libro.
-
-## Notas de esta etapa
-
-- La base de datos es SQLite (`database.db`), creada con todas sus tablas al
-  arrancar la aplicación.
-- Los tests usan SQLite **en memoria** (`StaticPool`) para no tocar el archivo
-  `database.db` del entorno.
+> Relaciones: **Libro N-N Autor** (un libro puede tener varios autores y un
+> autor varios libros; las respuestas de `/libros` incluyen la lista de
+> `autores` de cada libro) y **Prestamo N-1 Socio** / **Prestamo N-1 Libro**.
 
 ## Crear el entorno virtual (venv)
 
@@ -85,15 +76,34 @@ interactiva en `http://127.0.0.1:8000/docs`.
 | POST | `/socios` | Crea un socio |
 | PATCH | `/socios/{id}` | Reemplaza los datos de un socio |
 | DELETE | `/socios/{id}` | Elimina un socio |
+| GET | `/socios/{id}/prestamos` | Préstamos del socio (filtro `activos=true|false`) |
+| POST | `/prestamos` | Registra un préstamo |
+| POST | `/prestamos/{id}/devolucion` | Registra la devolución (fecha opcional) |
+
+Un préstamo sin `fecha_prestamo` (o una devolución sin `fecha_devolucion`)
+usa la fecha de hoy.
+
+### Reglas de negocio de préstamos
+
+| # | Regla | Error |
+|---|---|---|
+| 1 | Máximo 3 préstamos activos por socio | 409 |
+| 2 | No se presta un libro sin stock; al prestar se descuenta 1 | 409 |
+| 3 | Un socio inactivo no puede pedir préstamos | 403 |
+| 4 | Plazo de 14 días (`fecha_vencimiento = fecha_prestamo + 14`) | n/a |
+| 5 | Al devolver se repone el stock y se multa $100 por día de atraso | n/a |
+| 6 | No se puede devolver un préstamo ya devuelto | 409 |
 
 ### Códigos de respuesta y errores
 
 - `201` en la creación de cualquier recurso.
 - `204` al eliminar.
+- `403` cuando un socio inactivo intenta pedir un préstamo.
 - `404` cuando el recurso no existe (también con el detalle específico si
   falta el libro o el autor al asociar).
-- `409` cuando el ISBN de un libro o el email de un socio ya se usó, o si el
-  autor ya estaba asociado al libro.
+- `409` cuando el ISBN de un libro o el email de un socio ya se usó, si el
+  autor ya estaba asociado al libro, si no hay stock, si el socio llegó al
+  máximo de préstamos activos o si el préstamo ya fue devuelto.
 - `422` cuando los datos violan los modelos (stock negativo, año fuera de
   rango, email inválido, etc.).
 
@@ -142,32 +152,38 @@ tp2/
 ├── dependencies.py            # Deps compartidas: SessionDep, RepoDep, ServiceDep
 ├── model/                     # Tablas SQLModel (nivel DB)
 │   ├── autores.py             #   AutorBase / Autor
-│   ├── libros.py              #   LibroBase / Libro
-│   └── socios.py              #   SocioBase / Socio
+│   ├── libros.py              #   LibroBase / Libro / LibroAutor
+│   ├── socios.py              #   SocioBase / Socio
+│   └── prestamos.py           #   Prestamo
 ├── api/                       # Routers (capa HTTP, delgados)
 │   ├── autores.py
 │   ├── libros.py
 │   ├── socios.py
+│   ├── prestamos.py
 │   └── model/                 # Schemas de entrada/salida (nivel API)
 │       ├── autores.py         #   CrearAutor / ActualizarAutor / AutorResponse
 │       ├── libros.py
-│       └── socios.py
-├── services/                  # Lógica de negocio (chequeo de duplicados: 409)
+│       ├── socios.py
+│       └── prestamos.py       #   CrearPrestamo / RegistrarDevolucion / PrestamoResponse
+├── services/                  # Lógica de negocio (reglas de la consigna)
 │   ├── autores.py             #   AutorServiceInterface + AutorService
 │   ├── libros.py
 │   ├── socios.py
-│   └── exceptions.py          #   DuplicadoError
+│   ├── prestamos.py           #   plazos, stock, límite de préstamos, multas
+│   └── exceptions.py          #   RecursoInexistenteError / DuplicadoError / ConflictoError / NoPermitidoError
 ├── repositories/              # Acceso a datos con SQLModel
 │   ├── database.py            #   engine SQLite, create_db_and_tables, get_session
 │   ├── autores.py
 │   ├── libros.py
-│   └── socios.py
+│   ├── socios.py
+│   └── prestamos.py
 └── tests/                     # pytest + SQLite en memoria (StaticPool)
     ├── conftest.py
     └── api/
         ├── test_autores.py
         ├── test_libros.py
-        └── test_socios.py
+        ├── test_socios.py
+        └── test_prestamos.py
 ```
 
 Cada caso de un flujo con las **capas** del ejemplo `clase-1-sqlmodel`:
@@ -189,9 +205,3 @@ pip install pycodestyle
 python -m pycodestyle .
 pyright
 ```
-
-## Próximas etapas (según la consigna)
-
-3. **Préstamos:** reglas de negocio en la capa `services`.
-4. **Tests de negocio:** pytest con base en memoria, cobertura ≥ 80 %.
-5. **Opcional:** roles `bibliotecario` y `socio`.

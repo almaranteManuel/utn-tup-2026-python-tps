@@ -1,5 +1,3 @@
-# Se define el acceso a datos de libros
-
 from typing import Sequence
 
 from sqlmodel import col, select

@@ -10,7 +10,7 @@ from repositories.database import get_session
 @pytest.fixture(name="session")
 def session_fixture():
     engine = create_engine(
-        "sqlite://",  # en memoria
+        "sqlite://",
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )

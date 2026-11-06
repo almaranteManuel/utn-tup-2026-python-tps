@@ -1,5 +1,3 @@
-# Tests del CRUD de socios
-
 from fastapi.testclient import TestClient
 
 SOCIO = {"nombre": "Ana Gomez", "email": "ana@email.com"}

@@ -1,5 +1,3 @@
-# Se define el modelo de socios
-
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 

@@ -32,3 +32,11 @@ SocioRepositoryDep = Annotated[SocioRepository, Depends(SocioRepository)]
 from services.socios import SocioService, SocioServiceInterface  # noqa: E402
 
 SocioServiceDep = Annotated[SocioServiceInterface, Depends(SocioService)]
+
+from repositories.prestamos import PrestamoRepository  # noqa: E402
+
+PrestamoRepositoryDep = Annotated[PrestamoRepository, Depends(PrestamoRepository)]
+
+from services.prestamos import PrestamoService, PrestamoServiceInterface  # noqa: E402
+
+PrestamoServiceDep = Annotated[PrestamoServiceInterface, Depends(PrestamoService)]

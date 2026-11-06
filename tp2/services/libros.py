@@ -1,5 +1,3 @@
-# acá defino la lógica de negocio de libros
-
 from abc import ABC, abstractmethod
 from typing import Sequence
 

@@ -1,5 +1,3 @@
-# Se define el modelo de libros
-
 from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel

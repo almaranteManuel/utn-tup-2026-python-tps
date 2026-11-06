@@ -1,5 +1,3 @@
-# Tests del CRUD de autores
-
 from fastapi.testclient import TestClient
 
 

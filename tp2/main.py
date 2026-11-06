@@ -1,11 +1,12 @@
 import model.autores  # noqa: F401
 import model.libros  # noqa: F401
 import model.socios  # noqa: F401
+import model.prestamos  # noqa: F401
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from api import autores, libros, socios
+from api import autores, libros, socios, prestamos
 from repositories.database import create_db_and_tables
 
 
@@ -21,6 +22,7 @@ app = FastAPI(title="TP2 - Sistema de Biblioteca", lifespan=lifespan)
 app.include_router(autores.router)
 app.include_router(libros.router)
 app.include_router(socios.router)
+app.include_router(prestamos.router)
 
 
 # Define a GET route for the root URL

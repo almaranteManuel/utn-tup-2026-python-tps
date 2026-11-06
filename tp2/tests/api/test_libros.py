@@ -1,5 +1,3 @@
-# Tests del CRUD de libros y su relación con autores
-
 from fastapi.testclient import TestClient
 
 LIBRO = {

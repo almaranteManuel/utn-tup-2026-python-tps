@@ -1,5 +1,3 @@
-# Nivel de API
-
 from sqlmodel import SQLModel
 
 from model.socios import SocioBase

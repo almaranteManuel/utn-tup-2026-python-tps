@@ -25,7 +25,7 @@ tpX/
 ├── consigna.md        # Enunciado del trabajo
 ├── README.md          # Cómo correr / probar este TP
 ├── requirements.txt   # Dependencias del TP
-├── main.py            # (TP2 aún no tiene código)
+├── main.py           
 ├── models/
 └── routers/
 ```
